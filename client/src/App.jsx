@@ -29,12 +29,12 @@ const appRouter = createBrowserRouter([
 function App() { 
   return (
   <Provider store={store}>
-    <div className='flex flex-col h-full  w-screen overflow-x-hidden'>
-      <Header/>
+    {/* <div className='flex flex-col h-full  w-screen overflow-x-hidden'> */}
+      {/* <Header/> */}
       <RouterProvider router={appRouter}>
-        <Body/>
+        {/* <Body/> */}
       </RouterProvider>
-    </div>
+    {/* </div> */}
   </Provider>
   )
 }
