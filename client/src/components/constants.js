@@ -1,8 +1,12 @@
-const GOOGLE_API_KEY = "AIzaSyBenGT9Kxi4bjJwrXT7lzY8-lEklSHkK7w"
+const GOOGLE_API_KEY = "AIzaSyDL5iCXgFofcSySTjQVuu2fnYHkQ3wyuAE"
 
 export const YOUTUBE_API = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&maxResults=100&regionCode=US&key="+GOOGLE_API_KEY
 
 export const YOUTUBE_SEARCH_API ="https://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q="
+
+export const YOUTUBE_SEARCH_NAME_RESULTS = (query ) => `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(query)}&type=video&key=${GOOGLE_API_KEY}`
+
+export const YOUTUBE_GET_VIDEO_BY_ID = (videoId) => `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id=${encodeURIComponent(videoId)}&key=${GOOGLE_API_KEY}`
 
 export const commentData = [
   {

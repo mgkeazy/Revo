@@ -4,13 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleMenu } from "../utils/appSlice";
 import { YOUTUBE_SEARCH_API } from "./constants";
 import { chacheResults } from "../utils/searchSlice";
-import { Link } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
 const Header = () => {
 
     const searchCache = useSelector((store) => store.search);
 
-    // console.log(searchCache)
+
 
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -22,9 +22,8 @@ const Header = () => {
     dispatch(toggleMenu());
   };
 
-//   console.log("Search Query:", searchQuery, "Suggestions:", suggestions)
-// console.log(showSuggestions)
 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -53,6 +52,19 @@ const Header = () => {
 
     dispatch(chacheResults({[searchQuery]:json[1]}))
   };
+
+  const handleSearchEnter = (e)=>{
+    if(e.key=='Enter' && searchQuery.trim()){
+      handleSearch();
+    }
+  }
+
+  const handleSearch = ()=>{
+    if(searchQuery.trim()){
+      navigate(`/results?search_query=${searchQuery}`)
+      setSearchQuery('');
+    }
+  }
 
   return (
     <div className="flex items-start justify-between shadow-lg p-4">
@@ -84,7 +96,8 @@ const Header = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search..."
               onFocus={()=> setShowSuggestions(true)}
-              onBlur={() => setShowSuggestions(false)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
+              onKeyDown={handleSearchEnter}
             />
 
             {/* ❌ Clear Button inside input */}
@@ -101,21 +114,25 @@ const Header = () => {
             {showSuggestions && (
               <ul className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-300 shadow-md rounded-md z-10">
                 {suggestions.map((s, idx) => (
-                  <Link to="/search">
-                    <li
-                      key={idx}
-                      className="p-2 hover:bg-gray-200"
-                    >
-                      {s}
-                    </li>
-                  </Link>
+                  <li
+                    key={idx}
+                    className="p-2 hover:bg-gray-200"
+                    onMouseDown={(e)=>{
+                      setSearchQuery("");
+                      navigate(`/results?search_query=${s}`)
+                    }}
+                  >
+                    {s}
+                  </li>
                 ))}
               </ul>
             )}
           </div>
 
           {/* Search button */}
-          <button className="border border-gray-400 p-2 rounded-r-full bg-gray-100 hover:bg-green-400">
+          <button className="border border-gray-400 p-2 rounded-r-full bg-gray-100 hover:bg-green-400"
+          onClick={handleSearch}
+          >
             Search
           </button>
         </div>
@@ -129,6 +146,8 @@ const Header = () => {
           alt="user"
         />
       </div>
+
+      {/* <Outlet/> */}
     </div>
   );
 };
