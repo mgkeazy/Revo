@@ -1,4 +1,4 @@
-const GOOGLE_API_KEY = "AIzaSyDL5iCXgFofcSySTjQVuu2fnYHkQ3wyuAE"
+const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
 export const YOUTUBE_API = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&maxResults=100&regionCode=US&key="+GOOGLE_API_KEY
 
