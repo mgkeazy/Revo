@@ -1,38 +1,35 @@
 import React, { useEffect, useState } from "react";
 import logo from "../assets/logo.png";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleMenu } from "../utils/appSlice";
+import { toggleMenu, toggleProfile } from "../utils/appSlice";
 import { YOUTUBE_SEARCH_API } from "./constants";
 import { chacheResults } from "../utils/searchSlice";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 
 const Header = () => {
-
-    const searchCache = useSelector((store) => store.search);
-
-
+  const searchCache = useSelector((store) => store.search);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const dispatch = useDispatch();
+
+  const isPrfoleOpen = useSelector(store => store.app.isProfileOpen)
 
   const toggleMenuHandler = () => {
     dispatch(toggleMenu());
   };
 
-
   const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-        if(searchCache[searchQuery]){
-            setSuggestions(searchCache[searchQuery]);
-        }else{
-            getSuggestions();
-        }
-
+      if (searchCache[searchQuery]) {
+        setSuggestions(searchCache[searchQuery]);
+      } else {
+        getSuggestions();
+      }
     }, 300);
 
     return () => clearTimeout(timer);
@@ -48,26 +45,30 @@ const Header = () => {
     const json = await data.json();
     setSuggestions(json[1] || []);
 
-    
-
-    dispatch(chacheResults({[searchQuery]:json[1]}))
+    dispatch(chacheResults({ [searchQuery]: json[1] }));
   };
 
-  const handleSearchEnter = (e)=>{
-    if(e.key=='Enter' && searchQuery.trim()){
+  const handleSearchEnter = (e) => {
+    if (e.key == "Enter" && searchQuery.trim()) {
       handleSearch();
     }
+  };
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/results?search_query=${searchQuery}`);
+      setSearchQuery("");
+    }
+  };
+
+  const toggleProfileHandler = ()=>{
+    dispatch(toggleProfile())
   }
 
-  const handleSearch = ()=>{
-    if(searchQuery.trim()){
-      navigate(`/results?search_query=${searchQuery}`)
-      setSearchQuery('');
-    }
-  }
+  console.log(isPrfoleOpen);
 
   return (
-    <div className="flex items-start justify-between shadow-lg p-4">
+    <div className="flex items-start justify-between shadow-lg p-4 ">
       {/* Left: Hamburger + Logo */}
       <div className="flex items-center">
         <button onClick={toggleMenuHandler}>
@@ -77,11 +78,13 @@ const Header = () => {
             alt="menu"
           />
         </button>
-        <img
-          className="h-10"
-          src="https://upload.wikimedia.org/wikinews/en/archive/b/bf/20070306161914%21Real_Madrid_logo.png"
-          alt="logo"
-        />
+        <Link to="/">
+          <img
+            className="h-10"
+            src="https://upload.wikimedia.org/wikinews/en/archive/b/bf/20070306161914%21Real_Madrid_logo.png"
+            alt="logo"
+          />
+        </Link>
       </div>
 
       {/* Center: Search box with suggestions */}
@@ -95,7 +98,7 @@ const Header = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search..."
-              onFocus={()=> setShowSuggestions(true)}
+              onFocus={() => setShowSuggestions(true)}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
               onKeyDown={handleSearchEnter}
             />
@@ -117,9 +120,9 @@ const Header = () => {
                   <li
                     key={idx}
                     className="p-2 hover:bg-gray-200"
-                    onMouseDown={(e)=>{
+                    onMouseDown={(e) => {
                       setSearchQuery("");
-                      navigate(`/results?search_query=${s}`)
+                      navigate(`/results?search_query=${s}`);
                     }}
                   >
                     {s}
@@ -130,8 +133,9 @@ const Header = () => {
           </div>
 
           {/* Search button */}
-          <button className="border border-gray-400 p-2 rounded-r-full bg-gray-100 hover:bg-green-400"
-          onClick={handleSearch}
+          <button
+            className="border border-gray-400 p-2 rounded-r-full bg-gray-100 hover:bg-green-400"
+            onClick={handleSearch}
           >
             Search
           </button>
@@ -139,12 +143,26 @@ const Header = () => {
       </div>
 
       {/* Right: User Icon */}
-      <div className="flex items-center">
+      <div className="flex items-center relative">
         <img
-          className="h-10 pr-5 cursor-pointer"
+          className="h-10  rounded-full cursor-pointer"
           src="https://static.vecteezy.com/system/resources/previews/019/879/198/non_2x/user-icon-on-transparent-background-free-png.png"
           alt="user"
+          onClick={toggleProfileHandler}
         />
+        {
+          isPrfoleOpen && (
+            <div className="absolute top-full right-0 mt-3 w-56 bg-gray-300 shadow-xl rounded-lg py-2 z-20 overflow-y-auto max-h-96">
+              <p className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">Name</p>
+              <p className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">Email</p>
+              <p className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">Help</p>
+              <hr className="my-1"/>
+
+              <p className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">Logout</p>
+              
+            </div>
+          )
+        }
       </div>
 
       {/* <Outlet/> */}

@@ -3,8 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { YOUTUBE_SEARCH_NAME_RESULTS } from './constants';
 import SearchVideoCard from './SearchVideoCard';
 import ShimmerSearchCard from './ShimmerSearchCard';
-
-let array = new Array(20).fill(0)
+import { Link } from 'react-router-dom';
 
 const Results = () => {
   const [serachParams] = useSearchParams()
@@ -13,38 +12,29 @@ const Results = () => {
 
   const [searchData,  setSearchData] = useState([]);
 
-  console.log(searchData)
+  console.log(query)
 
   const getSearchData = async ( ) =>{
-    if (Array.isArray(json.items)) {
-      setSearchData(json.items);
-    } else {
-      console.warn("API response missing items:", json);
-      setSearchData([]);
-    }
+    const data = await fetch(url);
+    const json = await data.json()
+    console.log(json)
+    setSearchData(json.items)
   }
 
   useEffect(()=>{
     getSearchData();
-  },[])
+  },[query])
 
-  if(searchData.length===0){
-    return(
-        <>
-            {array.map((ind)=>(
-                <ShimmerSearchCard key={ind}/>
-            ))}
-        </>
-    )
-  }
+
   return (
 <div>
     {
       searchData.map((data) => (
-        <SearchVideoCard
-          key={data?.id?.videoId || data?.etag}
-          videoId={data?.id?.videoId}
-        />
+        <Link to={`/watch?v=${data?.id?.videoId}`} key={data?.etag}>
+          <SearchVideoCard
+            videoId={data?.id?.videoId}
+          />
+        </Link>
       ))
     }
   </div>

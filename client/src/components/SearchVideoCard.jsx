@@ -40,7 +40,7 @@ const SearchVideoCard = ({ videoId }) => {
   if(!videoData){
     return(
         <>
-            {array.map((ind)=>(
+            {array.map((_,ind)=>(
                 <ShimmerSearchCard key={ind}/>
             ))}
         </>
